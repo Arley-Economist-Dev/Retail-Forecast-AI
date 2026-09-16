@@ -2,7 +2,7 @@
 
 > **Plataforma productiva de analítica y pronóstico de series temporales en Retail con redes neuronales de Nixtla (`neuralforecast`), interpretación cualitativa mediante LLMs (Google Gemini / Groq), validación estricta de esquemas y despliegue automatizado en Render con Docker.**
 
-[![CI Pipeline](https://github.com/your-org/retail-forecast-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/retail-forecast-ai/actions)
+[![CI Pipeline](https://github.com/Arley-Economist-Dev/Retail-Forecast-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/Arley-Economist-Dev/Retail-Forecast-AI/actions)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Nixtla NeuralForecast](https://img.shields.io/badge/Nixtla-NeuralForecast-blueviolet.svg)](https://nixtla.github.io/neuralforecast/)
 [![PyTorch CPU](https://img.shields.io/badge/PyTorch-CPU%20Optimized-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
@@ -13,42 +13,43 @@
 
 ## 🏛️ 1. Arquitectura Técnica del Sistema
 
-El sistema fue diseñado por un Staff MLOps & Software Engineer bajo principios de alta resiliencia, bajo consumo de memoria (compatible con los límites de 512MB-1GB RAM de Render) y separación estricta de responsabilidades:
+El sistema fue diseñado bajo principios de alta resiliencia, bajo consumo de memoria (optimizado para CPU y límites de 512MB-1GB RAM de Render) y separación estricta de responsabilidades:
 
 ```mermaid
-flowchart TD
-    subgraph UI ["Frontend Interactivo (TailwindCSS + Chart.js)"]
-        UploadZone["Carga CSV / Drag & Drop / Demo Retail"]
-        Horizon["Selector de Horizonte (3 - 90 días)"]
+graph TD
+    subgraph UI ["Frontend Interactivo"]
+        UploadZone["Carga CSV / Drag and Drop / Demo"]
+        Horizon["Selector de Horizonte (3 a 90 dias)"]
         ModelSelect["Modelo Nixtla (NHITS / NBEATS)"]
-        Dashboard["Gráfico Interactivo + Tarjetas KPI"]
+        Dashboard["Grafico Interactivo + KPIs"]
         ReportViewer["Visor Markdown Informe Ejecutivo"]
     end
 
-    subgraph Backend ["FastAPI API Gateway & Controladores"]
-        HealthRoute["GET /health (Liveness / Probes)"]
-        SampleRoute["GET /api/v1/sample-data (Demo Data)"]
-        ForecastRoute["POST /api/v1/forecast (Inferencia & LLM)"]
+    subgraph Backend ["FastAPI API Gateway"]
+        HealthRoute["GET /health"]
+        SampleRoute["GET /api/v1/sample-data"]
+        ForecastRoute["POST /api/v1/forecast"]
     end
 
-    subgraph Services ["Capa de Servicios MLOps"]
-        DP["DataProcessor: Validación Contrato Nixtla & Imputación de Gaps"]
-        NF["ForecasterService: Inferencia NHITS/NBEATS en CPU"]
-        LLM["LLMAnalystService: Gemini 1.5 Flash / Groq / Fallback"]
+    subgraph Services ["Servicios MLOps"]
+        DP["DataProcessor (Validacion Nixtla y Gaps)"]
+        NF["ForecasterService (Inferencia CPU)"]
+        LLM["LLMAnalystService (Gemini / Heuristico)"]
     end
 
-    UploadZone -->|Multipart Form| ForecastRoute
+    UploadZone --> ForecastRoute
     Horizon --> ForecastRoute
     ModelSelect --> ForecastRoute
 
     ForecastRoute --> DP
-    DP -->|DataFrame validado & Frecuencia| NF
-    NF -->|Predicciones & Bandas de Confianza| ForecastRoute
-    DP & NF -->|Estadísticas Descriptivas & Delta %| LLM
-    LLM -->|Informe Ejecutivo en Markdown| ForecastRoute
+    DP --> NF
+    DP --> LLM
+    NF --> ForecastRoute
+    NF --> LLM
+    LLM --> ForecastRoute
 
-    ForecastRoute -->|JSON ForecastResponse| Dashboard
-    ForecastRoute -->|Markdown| ReportViewer
+    ForecastRoute --> Dashboard
+    ForecastRoute --> ReportViewer
 ```
 
 ---
@@ -93,8 +94,8 @@ El endpoint `/api/v1/forecast` valida estrictamente la estructura del CSV:
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/your-org/retail-forecast-ai.git
-cd retail-forecast-ai
+git clone https://github.com/Arley-Economist-Dev/Retail-Forecast-AI.git
+cd Retail-Forecast-AI
 ```
 
 ### 2. Crear y activar entorno virtual
